@@ -1,9 +1,8 @@
 const express = require('express');
+const { getAllDocuments } = require('../controllers/document');
 
 const router = express.Router();
 
-// @desc Get All Documents
-// @route GET /api/v1/document
-// router.route('/').get()
+router.route('/').get(getAllDocuments);
 
 module.exports = router;
