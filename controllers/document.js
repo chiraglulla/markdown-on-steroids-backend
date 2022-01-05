@@ -59,6 +59,26 @@ const createDocument = async (req, res) => {
   }
 };
 
+// @desc Update Document
+// @route PATCH /api/v1/document/:id
+const updateDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const changes = req.body;
+    await Document.findByIdAndUpdate(id, changes, {
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failure',
+      message: err,
+    });
+  }
+};
+
 // @desc Delete document
 // @route DELETE /api/v1/document/:id
 const deleteDocument = async (req, res) => {
@@ -83,4 +103,5 @@ module.exports = {
   getDocument,
   createDocument,
   deleteDocument,
+  updateDocument,
 };
