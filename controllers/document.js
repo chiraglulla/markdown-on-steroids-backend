@@ -5,7 +5,6 @@ const Document = require('../models/document');
 const getAllDocuments = async (req, res) => {
   try {
     const documents = await Document.find();
-
     res.status(200).json({
       status: 'success',
       data: {
@@ -46,7 +45,6 @@ const createDocument = async (req, res) => {
   try {
     const doc = req.body;
     const newDoc = await Document.create(doc);
-
     res.status(201).json({
       status: 'success',
       data: {

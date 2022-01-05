@@ -1,17 +1,18 @@
 const mongoose = require('mongoose');
 
-const documentsSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'A document must have a name'],
-    trim: true,
+const documentsSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'A document must have a name'],
+      trim: true,
+    },
+    text: String,
   },
-  text: String,
-  createdAt: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const Document = mongoose.model('Document', documentsSchema);
 
