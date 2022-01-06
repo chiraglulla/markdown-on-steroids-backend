@@ -68,7 +68,7 @@ const updateDocument = async (req, res) => {
     await Document.findByIdAndUpdate(id, changes, {
       runValidators: true,
     });
-    res.status(200).json({
+    res.status(204).json({
       status: 'success',
     });
   } catch (err) {
