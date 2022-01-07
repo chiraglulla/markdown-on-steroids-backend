@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const documentRouter = require('./routes/document');
 const addHeaders = require('./middlewares/addHeaders');
-const handleUnhandledRoutes = require('./middlewares/handleUnhandledRoutes');
+const { handleUnhandledRoutes } = require('./controllers/error');
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();

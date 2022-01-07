@@ -9,4 +9,6 @@ const handleUnhandledRoutes = (req, res, next) => {
   next(err);
 };
 
-module.exports = handleUnhandledRoutes;
+module.exports = {
+  handleUnhandledRoutes,
+};
