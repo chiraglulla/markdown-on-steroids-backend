@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -21,6 +22,11 @@ const userSchema = new mongoose.Schema({
       message: 'Invalid email {{VALUE}}',
     },
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Provide a password'],
@@ -37,6 +43,9 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not equal.',
     },
   },
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -44,6 +53,8 @@ userSchema.pre('save', async function (next) {
 
   this.password = await bcrypt.hash(this.password, 12);
   this.confirmPassword = undefined;
+
+  if (!this.isNew) this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
@@ -52,6 +63,26 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (issueTime) {
+  if (this.passwordChangedAt) {
+    const changedTime = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return issueTime < changedTime;
+  }
+
+  return false;
+};
+
+userSchema.methods.generateResetToken = function () {
+  const token = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(token)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+  return token;
 };
 
 const User = mongoose.model('User', userSchema);
