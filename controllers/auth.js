@@ -12,6 +12,18 @@ const signToken = (id) => {
   });
 };
 
+const createAndSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
 const signup = asyncWrapper(async (req, res, next) => {
   const { name, email, password, confirmPassword, passwordChangedAt } =
     req.body;
@@ -23,15 +35,7 @@ const signup = asyncWrapper(async (req, res, next) => {
     passwordChangedAt,
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createAndSendToken(newUser, 201, res);
 });
 
 const login = asyncWrapper(async (req, res, next) => {
@@ -57,12 +61,7 @@ const login = asyncWrapper(async (req, res, next) => {
     return next(err);
   }
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
 
 // Authentication
@@ -187,6 +186,27 @@ const resetPassword = asyncWrapper(async (req, res, next) => {
   });
 });
 
+const updatePassword = asyncWrapper(async (req, res, next) => {
+  const { id } = req.user;
+  const { passwordCurrent, password, confirmPassword } = req.body;
+  const user = await User.findById(id).select('+password');
+
+  if (!(await user.correctPassword(passwordCurrent, user.password))) {
+    const err = new ErrorHandler(
+      'Your current password is wrong',
+      401
+    ).sendError();
+    return next(err);
+  }
+
+  user.password = password;
+  user.confirmPassword = confirmPassword;
+
+  await user.save();
+
+  createAndSendToken(user, 200, res);
+});
+
 module.exports = {
   signup,
   login,
@@ -194,4 +214,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };
