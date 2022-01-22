@@ -1,5 +1,6 @@
 const express = require('express');
 const { updateMe, deleteMe } = require('../controllers/user');
+const { authLimiter } = require('../middlewares/authLimiter');
 const {
   signup,
   login,
@@ -11,11 +12,11 @@ const {
 
 const router = express.Router();
 
-router.post('/signup', signup);
-router.post('/login', login);
-router.post('/forgotPassword', forgotPassword);
-router.patch('/resetPassword/:token', resetPassword);
-router.patch('/updateMyPassword', protect, updatePassword);
+router.post('/signup', authLimiter, signup);
+router.post('/login', authLimiter, login);
+router.post('/forgotPassword', authLimiter, forgotPassword);
+router.patch('/resetPassword/:token', authLimiter, resetPassword);
+router.patch('/updateMyPassword', authLimiter, protect, updatePassword);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 
