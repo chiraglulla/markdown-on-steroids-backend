@@ -8,6 +8,7 @@ const addHeaders = (req, res, next) => {
     'Access-Control-Allow-Headers',
     'Content-Type, Content-Length, X-Requested-With'
   );
+  res.header('Access-Control-Allow-Credentials', true);
   next();
 };
 
