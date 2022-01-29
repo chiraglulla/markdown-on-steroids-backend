@@ -8,10 +8,12 @@ const {
   resetPassword,
   updatePassword,
   protect,
+  isAuthenticated,
 } = require('../controllers/auth');
 
 const router = express.Router();
 
+router.get('/isAuthenticated', authLimiter, protect, isAuthenticated);
 router.post('/signup', authLimiter, signup);
 router.post('/login', authLimiter, login);
 router.post('/forgotPassword', authLimiter, forgotPassword);
