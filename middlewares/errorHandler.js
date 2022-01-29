@@ -20,12 +20,13 @@ const handleDuplicateFieldsDB = (err) => {
 
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
-  const message = `Invalid input data. ${errors.join('. ')}`;
+  const message = `${errors.join('. ')}`;
   return new ErrorHandler(message, 400).sendError();
 };
 
 const sendDevError = (err, res) => {
   res.status(err.statusCode).json({
+    statusCode: err.statusCode,
     error: err,
     status: err.status,
     message: err.message,
@@ -36,6 +37,7 @@ const sendDevError = (err, res) => {
 const sendProdError = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
+      statusCode: err.statusCode,
       status: err.status || 'error',
       message: err.message,
     });
@@ -43,6 +45,7 @@ const sendProdError = (err, res) => {
     console.error('Error🔥', err);
 
     res.status(500).json({
+      statusCode: err.statusCode,
       status: 'error',
       message: 'Something went wrong',
     });
@@ -54,6 +57,7 @@ const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
 
   if (process.env.NODE_ENV === 'development') {
+    console.log(err.stack);
     sendDevError(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };

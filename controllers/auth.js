@@ -6,6 +6,10 @@ const asyncWrapper = require('../utils/asyncWrapper');
 const ErrorHandler = require('../utils/createError');
 const sendEmail = require('../utils/sendEmail');
 
+const isAuthenticated = (req, res, next) => {
+  res.status(204).send();
+};
+
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -15,8 +19,22 @@ const signToken = (id) => {
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', token, cookieOptions);
+
+  user.password = undefined;
+
   res.status(statusCode).json({
     status: 'success',
+    statusCode,
     token,
     data: {
       user,
@@ -25,14 +43,12 @@ const createAndSendToken = (user, statusCode, res) => {
 };
 
 const signup = asyncWrapper(async (req, res, next) => {
-  const { name, email, password, confirmPassword, passwordChangedAt } =
-    req.body;
+  const { name, email, password, confirmPassword } = req.body;
   const newUser = await User.create({
     name,
     email,
     password,
     confirmPassword,
-    passwordChangedAt,
   });
 
   createAndSendToken(newUser, 201, res);
@@ -66,6 +82,19 @@ const login = asyncWrapper(async (req, res, next) => {
 
 // Authentication
 const protect = asyncWrapper(async (req, res, next) => {
+  let cookies = req.headers['cookie'];
+  if (!cookies) {
+    const err = new ErrorHandler('Please Log In', 401).sendError();
+    return next(err);
+  }
+  cookies = cookies.split(';');
+  for (let cookie of cookies) {
+    cookie = cookie.trim();
+    if (cookie.startsWith('jwt=')) {
+      req.headers.authorization = `Bearer ${cookie.substring(4)}`;
+      break;
+    }
+  }
   const { authorization } = req.headers;
   let token;
   if (authorization && authorization.startsWith('Bearer')) {
@@ -135,6 +164,7 @@ const forgotPassword = asyncWrapper(async (req, res, next) => {
 
     res.status(200).json({
       status: 'success',
+      statusCode: 200,
       message: 'Token sent to your email.',
     });
   } catch (error) {
@@ -182,6 +212,7 @@ const resetPassword = asyncWrapper(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    statusCode: 200,
     message: 'Password reset successful',
   });
 });
@@ -215,4 +246,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   updatePassword,
+  isAuthenticated,
 };
