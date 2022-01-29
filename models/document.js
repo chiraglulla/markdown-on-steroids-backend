@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./user');
 
 const documentsSchema = new mongoose.Schema(
   {
@@ -8,6 +9,11 @@ const documentsSchema = new mongoose.Schema(
       trim: true,
     },
     text: String,
+    owner: {
+      type: mongoose.Types.ObjectId,
+      required: [true, 'A document must have a owner'],
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

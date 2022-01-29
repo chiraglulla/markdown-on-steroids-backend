@@ -5,9 +5,10 @@ const ErrorHandler = require('../utils/createError');
 // @desc Get All Documents
 // @route GET /api/v1/document
 const getAllDocuments = asyncWrapper(async (req, res, next) => {
-  const documents = await Document.find();
+  const documents = await Document.find({ owner: req.user._id });
   res.status(200).json({
     status: 'success',
+    statusCode: 200,
     data: {
       documents,
     },
@@ -18,7 +19,7 @@ const getAllDocuments = asyncWrapper(async (req, res, next) => {
 // @route GET /api/v1/document/:id
 const getDocument = asyncWrapper(async (req, res, next) => {
   const { id } = req.params;
-  const doc = await Document.findById(id);
+  const doc = await Document.findOne({ _id: id, owner: req.user._id });
 
   if (!doc) {
     const err = new ErrorHandler('No such document found', 404);
@@ -27,6 +28,7 @@ const getDocument = asyncWrapper(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
+    statusCode: 200,
     data: {
       document: doc,
     },
@@ -37,9 +39,10 @@ const getDocument = asyncWrapper(async (req, res, next) => {
 // @route POST /api/v1/document/
 const createDocument = asyncWrapper(async (req, res, next) => {
   const doc = req.body;
-  const newDoc = await Document.create(doc);
+  const newDoc = await Document.create({ ...doc, owner: req.user._id });
   res.status(201).json({
     status: 'success',
+    statusCode: 201,
     data: {
       document: newDoc,
     },
