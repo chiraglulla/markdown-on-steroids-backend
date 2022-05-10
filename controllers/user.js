@@ -1,7 +1,6 @@
 const User = require('../models/user');
 const asyncWrapper = require('../utils/asyncWrapper');
 const ErrorHandler = require('../utils/createError');
-const factory = require('./handlerFactory');
 
 const filterObj = (obj, ...allowed) => {
   const newObj = {};
@@ -44,11 +43,7 @@ const deleteMe = asyncWrapper(async (req, res, next) => {
   });
 });
 
-const deleteUser = factory.deleteOne(User);
-const updateUser = factory.updateOne(User);
-
 module.exports = {
   updateMe,
   deleteMe,
-  deleteUser,
 };
