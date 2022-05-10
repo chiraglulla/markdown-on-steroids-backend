@@ -82,6 +82,7 @@ const login = asyncWrapper(async (req, res, next) => {
 
 // Authentication
 const protect = asyncWrapper(async (req, res, next) => {
+  console.log(req.headers)
   let cookies = req.headers['cookie'];
   if (!cookies) {
     const err = new ErrorHandler('Please Log In', 401).sendError();
