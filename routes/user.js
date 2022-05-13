@@ -21,7 +21,7 @@ router.get('/logout', authLimiter, logout);
 router.post('/forgotPassword', authLimiter, forgotPassword);
 router.patch('/resetPassword/:token', authLimiter, resetPassword);
 router.patch('/updateMyPassword', authLimiter, protect, updatePassword);
-router.get('/me', authLimiter, protect, getMe);
+router.get('/me', protect, getMe);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 

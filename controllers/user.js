@@ -11,10 +11,12 @@ const filterObj = (obj, ...allowed) => {
 };
 
 const getMe = asyncWrapper(async (req, res, next) => {
+  const {name, email} = req.user;
   res.status(200).json({
     success: true,
     data: {
-      user: req.user
+      name,
+      email
     }
   })
 })
