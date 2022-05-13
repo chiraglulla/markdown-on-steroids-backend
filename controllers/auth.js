@@ -238,9 +238,26 @@ const updatePassword = asyncWrapper(async (req, res, next) => {
   createAndSendToken(user, 200, res);
 });
 
+const logout = asyncWrapper(async (req, res, next) => {
+  const cookieOptions = {
+    expires: new Date(Date.now() + 1),
+    httpOnly: true
+  }
+
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+  res.cookie('jwt', '', cookieOptions);
+
+  res.status(204).json({
+    success: true,
+    data: null
+  })
+})
+
 module.exports = {
   signup,
   login,
+  logout,
   protect,
   restrictTo,
   forgotPassword,

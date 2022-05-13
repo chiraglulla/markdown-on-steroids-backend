@@ -6,15 +6,15 @@ const {
   deleteDocument,
   updateDocument,
 } = require('../controllers/document');
-const { protect } = require('../controllers/auth');
+const { protect, restrictTo } = require('../controllers/auth');
 
 const router = express.Router();
 
-router.route('/').get(protect, getAllDocuments).post(protect, createDocument);
+router.route('/').get(protect, restrictTo('user'), getAllDocuments).post(protect, restrictTo('user'), createDocument);
 router
   .route('/:id')
-  .get(protect, getDocument)
-  .patch(protect, updateDocument)
-  .delete(protect, deleteDocument);
+  .get(protect, restrictTo('user'), getDocument)
+  .patch(protect, restrictTo('user'), updateDocument)
+  .delete(protect, restrictTo('user'), deleteDocument);
 
 module.exports = router;

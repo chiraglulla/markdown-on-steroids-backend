@@ -4,6 +4,7 @@ const { authLimiter } = require('../middlewares/authLimiter');
 const {
   signup,
   login,
+  logout,
   forgotPassword,
   resetPassword,
   updatePassword,
@@ -16,6 +17,7 @@ const router = express.Router();
 router.get('/isAuthenticated', authLimiter, protect, isAuthenticated);
 router.post('/signup', authLimiter, signup);
 router.post('/login', authLimiter, login);
+router.get('/logout', authLimiter, logout);
 router.post('/forgotPassword', authLimiter, forgotPassword);
 router.patch('/resetPassword/:token', authLimiter, resetPassword);
 router.patch('/updateMyPassword', authLimiter, protect, updatePassword);
