@@ -1,5 +1,5 @@
 const express = require('express');
-const { updateMe, deleteMe } = require('../controllers/user');
+const { getMe, updateMe, deleteMe } = require('../controllers/user');
 const { authLimiter } = require('../middlewares/authLimiter');
 const {
   signup,
@@ -21,6 +21,7 @@ router.get('/logout', authLimiter, logout);
 router.post('/forgotPassword', authLimiter, forgotPassword);
 router.patch('/resetPassword/:token', authLimiter, resetPassword);
 router.patch('/updateMyPassword', authLimiter, protect, updatePassword);
+router.get('/me', authLimiter, protect, getMe);
 router.patch('/updateMe', protect, updateMe);
 router.delete('/deleteMe', protect, deleteMe);
 

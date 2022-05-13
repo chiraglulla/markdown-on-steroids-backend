@@ -10,6 +10,15 @@ const filterObj = (obj, ...allowed) => {
   return newObj;
 };
 
+const getMe = asyncWrapper(async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      user: req.user
+    }
+  })
+})
+
 const updateMe = asyncWrapper(async (req, res, next) => {
   const { id } = req.user;
   if (req.body.password || req.body.confirmPassword) {
@@ -44,6 +53,7 @@ const deleteMe = asyncWrapper(async (req, res, next) => {
 });
 
 module.exports = {
+  getMe,
   updateMe,
   deleteMe,
 };
