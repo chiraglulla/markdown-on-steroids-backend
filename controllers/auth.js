@@ -242,7 +242,8 @@ const updatePassword = asyncWrapper(async (req, res, next) => {
 const logout = asyncWrapper(async (req, res, next) => {
   const cookieOptions = {
     expires: new Date(Date.now() + 1),
-    httpOnly: true
+    httpOnly: true,
+    sameSite: 'None'
   }
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
