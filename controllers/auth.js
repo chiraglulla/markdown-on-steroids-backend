@@ -24,7 +24,7 @@ const createAndSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    sameSite: 'None'
+    sameSite: 'None',
   };
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
@@ -243,8 +243,8 @@ const logout = asyncWrapper(async (req, res, next) => {
   const cookieOptions = {
     expires: new Date(Date.now() + 1),
     httpOnly: true,
-    sameSite: 'None'
-  }
+    sameSite: 'None',
+  };
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
@@ -252,9 +252,9 @@ const logout = asyncWrapper(async (req, res, next) => {
 
   res.status(204).json({
     success: true,
-    data: null
-  })
-})
+    data: null,
+  });
+});
 
 module.exports = {
   signup,

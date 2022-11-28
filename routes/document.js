@@ -10,7 +10,10 @@ const { protect, restrictTo } = require('../controllers/auth');
 
 const router = express.Router();
 
-router.route('/').get(protect, restrictTo('user'), getAllDocuments).post(protect, restrictTo('user'), createDocument);
+router
+  .route('/')
+  .get(protect, restrictTo('user'), getAllDocuments)
+  .post(protect, restrictTo('user'), createDocument);
 router
   .route('/:id')
   .get(protect, restrictTo('user'), getDocument)
