@@ -25,18 +25,16 @@ const createAndSendToken = (user, statusCode, res) => {
     ),
     httpOnly: true,
     sameSite: 'None',
+    secure: true,
   };
-
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', token, cookieOptions);
 
   user.password = undefined;
-
+  console.log("sending token")
   res.status(statusCode).json({
     status: 'success',
     statusCode,
-    token,
     data: {
       user,
     },
@@ -84,6 +82,7 @@ const login = asyncWrapper(async (req, res, next) => {
 // Authentication
 const protect = asyncWrapper(async (req, res, next) => {
   let cookies = req.headers['cookie'];
+  console.log("cookies: ", cookies)
   if (!cookies) {
     const err = new ErrorHandler('Please Log In', 401).sendError();
     return next(err);
@@ -92,6 +91,7 @@ const protect = asyncWrapper(async (req, res, next) => {
   for (let cookie of cookies) {
     cookie = cookie.trim();
     if (cookie.startsWith('jwt=')) {
+      console.log("Found JWT")
       req.headers.authorization = `Bearer ${cookie.substring(4)}`;
       break;
     }
@@ -244,9 +244,8 @@ const logout = asyncWrapper(async (req, res, next) => {
     expires: new Date(Date.now() + 1),
     httpOnly: true,
     sameSite: 'None',
+    secure: true,
   };
-
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
   res.cookie('jwt', '', cookieOptions);
 
